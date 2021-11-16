@@ -12,6 +12,7 @@ func AdminLoginPost(c *gin.Context) {
 	admin := model.Admin{}
 	if err := c.ShouldBindJSON(&admin); err != nil {
 		c.JSON(http.StatusBadRequest, err)
+		return
 	}
 	db := lib.GetDB()
 	adminDB := model.Admin{}
@@ -22,7 +23,7 @@ func AdminLoginPost(c *gin.Context) {
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, err)
 		} else {
-			c.SetCookie("ytmy", cookieStr, 3600, "/", "*", false, true)
+			c.SetCookie(lib.GetConfig().Cookie.Name, cookieStr, 3600, "/", lib.GetConfig().Cookie.Domain, false, true)
 			c.JSON(http.StatusOK, "OK")
 		}
 	} else {

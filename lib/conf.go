@@ -20,9 +20,15 @@ type AES struct {
 	Key string `yaml:"key"`
 }
 
+type CookieConf struct {
+	Name   string `yaml:"name"`
+	Domain string `yaml:"domain"`
+}
+
 type Conf struct {
-	DB  DB  `yaml:"db"`
-	AES AES `yaml:"aes"`
+	DB     DB         `yaml:"db"`
+	AES    AES        `yaml:"aes"`
+	Cookie CookieConf `yaml:"cookie"`
 }
 
 var conf *Conf
