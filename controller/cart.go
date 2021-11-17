@@ -8,14 +8,14 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func GoodPost(c *gin.Context) {
-	good := model.Good{}
-	if err := c.ShouldBindJSON(&good); err != nil {
+func CartPost(c *gin.Context) {
+	cart := model.Cart{}
+	if err := c.ShouldBindJSON(&cart); err != nil {
 		c.JSON(http.StatusBadRequest, err)
 		return
 	}
 	db := lib.DB()
-	result := db.Create(&good)
+	result := db.Create(&cart)
 	if result.Error != nil {
 		c.JSON(http.StatusInternalServerError, result.Error)
 	} else {
@@ -23,38 +23,36 @@ func GoodPost(c *gin.Context) {
 	}
 }
 
-func GoodGet(c *gin.Context) {
-	var goods []model.Good
+func CartGet(c *gin.Context) {
+	var Carts []model.Cart
 	db := lib.DB()
-	result := db.Find(&goods)
+	userid := c.GetInt("userID")
+	result := db.Where("userid = ?", userid).Find(&Carts)
 	if result.Error != nil {
 		c.JSON(http.StatusInternalServerError, result.Error)
 	} else {
-		c.JSON(http.StatusOK, goods)
+		c.JSON(http.StatusOK, Carts)
 	}
 }
 
-func GoodPut(c *gin.Context) {
-	good := model.Good{}
-	if err := c.ShouldBindJSON(&good); err != nil {
+func CartPut(c *gin.Context) {
+	Cart := model.Cart{}
+	if err := c.ShouldBindJSON(&Cart); err != nil {
 		c.JSON(http.StatusBadRequest, err)
 		return
 	}
 	id := c.Param("id")
 	db := lib.DB()
-	var goodDB model.Good
-	db.First(&goodDB, id)
-	goodDB.Name = good.Name
-	goodDB.Img = good.Img
-	goodDB.Price = good.Price
-	goodDB.Description = good.Description
-	db.Save(&goodDB)
+	var CartDB model.Cart
+	db.First(&CartDB, id)
+	CartDB.Num = Cart.Num
+	db.Save(&CartDB)
 	c.JSON(http.StatusOK, "OK")
 }
 
-func GoodDelete(c *gin.Context) {
+func CartDelete(c *gin.Context) {
 	id := c.Param("id")
 	db := lib.DB()
-	db.Delete(&model.Good{}, id)
+	db.Delete(&model.Cart{}, id)
 	c.JSON(http.StatusOK, "OK")
 }

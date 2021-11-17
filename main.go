@@ -9,8 +9,6 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-var db = make(map[string]string)
-
 func setupRouter() *gin.Engine {
 	// Disable Console Color
 	// gin.DisableConsoleColor()
@@ -20,6 +18,10 @@ func setupRouter() *gin.Engine {
 	login.Use(middle.IsLogin())
 	{
 		login.GET("/goods", controller.GoodGet)
+		login.GET("/carts", controller.CartGet)
+		login.POST("/carts", controller.CartPost)
+		login.PUT("/carts/:id", controller.CartPut)
+		login.DELETE("/carts/:id", controller.CartDelete)
 		admin := login.Group("")
 		admin.Use(middle.IsAdmin())
 		{
@@ -33,10 +35,12 @@ func setupRouter() *gin.Engine {
 }
 
 func dbinstance() {
-	db := lib.GetDB()
+	db := lib.DB()
 	db.AutoMigrate(
 		&model.Admin{},
 		&model.Good{},
+		&model.Cart{},
+		&model.User{},
 	)
 }
 

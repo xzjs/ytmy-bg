@@ -11,7 +11,7 @@ import (
 // IsLogin 登录态验证中间件
 func IsLogin() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		_cookie, err := c.Cookie(lib.GetConfig().Cookie.Name)
+		_cookie, err := c.Cookie(lib.Conf().Cookie.Name)
 		if err != nil {
 			c.Abort()
 			c.JSON(http.StatusUnauthorized, "token is not valid")

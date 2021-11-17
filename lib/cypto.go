@@ -18,7 +18,7 @@ func MD5(s string) string {
 //Encode 随机向量加密
 func Encode(text string) string {
 	origData := []byte(text)
-	k := []byte(GetConfig().AES.Key)
+	k := []byte(Conf().AES.Key)
 	// 分组秘钥
 	block, _ := aes.NewCipher(k)
 	// 获取秘钥块的长度
@@ -40,7 +40,7 @@ func Decode(cry string) string {
 	// 转成字节数组
 	//crytedByte, _ := base64.StdEncoding.DecodeString(cry)
 	crytedByte, _ := hex.DecodeString(cry)
-	k := []byte(GetConfig().AES.Key)
+	k := []byte(Conf().AES.Key)
 	// 分组秘钥
 	block, _ := aes.NewCipher(k)
 	// 获取秘钥块的长度

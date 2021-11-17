@@ -14,7 +14,7 @@ func AdminLoginPost(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, err)
 		return
 	}
-	db := lib.GetDB()
+	db := lib.DB()
 	adminDB := model.Admin{}
 	db.Where("name=?", admin.Name).First(&adminDB)
 	if adminDB.Pwd == lib.MD5(admin.Pwd) {
@@ -23,7 +23,7 @@ func AdminLoginPost(c *gin.Context) {
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, err)
 		} else {
-			c.SetCookie(lib.GetConfig().Cookie.Name, cookieStr, 3600, "/", lib.GetConfig().Cookie.Domain, false, true)
+			c.SetCookie(lib.Conf().Cookie.Name, cookieStr, 3600, "/", lib.Conf().Cookie.Domain, false, true)
 			c.JSON(http.StatusOK, "OK")
 		}
 	} else {
