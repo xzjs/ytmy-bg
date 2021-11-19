@@ -15,21 +15,33 @@ func CartPost(c *gin.Context) {
 		return
 	}
 	db := lib.DB()
-	result := db.Create(&cart)
+	userID := c.GetInt("userID")
+	result := db.Where("user_id = ? AND good_id = ?", userID, cart.GoodID).First(&cart)
 	if result.Error != nil {
-		c.JSON(http.StatusInternalServerError, result.Error)
+		cart.Num = 1
+		cart.UserID = uint(userID)
+		result = db.Create(&cart)
+		if result.Error != nil {
+			c.JSON(http.StatusInternalServerError, result.Error.Error())
+			return
+		}
 	} else {
-		c.JSON(http.StatusOK, "OK")
+		cart.Num++
+		if result = db.Save(&cart); result.Error != nil {
+			c.JSON(http.StatusInternalServerError, result.Error.Error())
+			return
+		}
 	}
+	c.JSON(http.StatusOK, "OK")
 }
 
 func CartGet(c *gin.Context) {
 	var Carts []model.Cart
 	db := lib.DB()
 	userid := c.GetInt("userID")
-	result := db.Where("userid = ?", userid).Find(&Carts)
+	result := db.Where("user_id = ?", userid).Preload("Good").Find(&Carts)
 	if result.Error != nil {
-		c.JSON(http.StatusInternalServerError, result.Error)
+		c.JSON(http.StatusInternalServerError, result.Error.Error())
 	} else {
 		c.JSON(http.StatusOK, Carts)
 	}
@@ -44,15 +56,29 @@ func CartPut(c *gin.Context) {
 	id := c.Param("id")
 	db := lib.DB()
 	var CartDB model.Cart
-	db.First(&CartDB, id)
-	CartDB.Num = Cart.Num
-	db.Save(&CartDB)
+	userID := c.GetInt("userID")
+	result := db.Where("user_id = ?", userID).First(&CartDB, id)
+	if result.Error != nil {
+		c.JSON(http.StatusInternalServerError, result.Error.Error())
+		return
+	}
+	if Cart.Num == 0 {
+		db.Delete(&CartDB)
+	} else {
+		CartDB.Num = Cart.Num
+		db.Save(&CartDB)
+	}
 	c.JSON(http.StatusOK, "OK")
 }
 
 func CartDelete(c *gin.Context) {
 	id := c.Param("id")
 	db := lib.DB()
-	db.Delete(&model.Cart{}, id)
+	userID := c.GetInt("userID")
+	result := db.Where("user_id = ?", userID).Delete(&model.Cart{}, id)
+	if result.Error != nil {
+		c.JSON(http.StatusInternalServerError, result.Error.Error())
+		return
+	}
 	c.JSON(http.StatusOK, "OK")
 }

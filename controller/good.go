@@ -17,7 +17,7 @@ func GoodPost(c *gin.Context) {
 	db := lib.DB()
 	result := db.Create(&good)
 	if result.Error != nil {
-		c.JSON(http.StatusInternalServerError, result.Error)
+		c.JSON(http.StatusInternalServerError, result.Error.Error())
 	} else {
 		c.JSON(http.StatusOK, "OK")
 	}
@@ -28,7 +28,7 @@ func GoodGet(c *gin.Context) {
 	db := lib.DB()
 	result := db.Find(&goods)
 	if result.Error != nil {
-		c.JSON(http.StatusInternalServerError, result.Error)
+		c.JSON(http.StatusInternalServerError, result.Error.Error())
 	} else {
 		c.JSON(http.StatusOK, goods)
 	}
