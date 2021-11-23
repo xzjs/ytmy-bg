@@ -14,6 +14,7 @@ func setupRouter() *gin.Engine {
 	// gin.DisableConsoleColor()
 	r := gin.Default()
 	r.POST("/api/admin/login", controller.AdminLoginPost)
+	r.POST("/api/user/login", controller.UserLogin)
 	login := r.Group("/api")
 	login.Use(middle.IsLogin())
 	{
@@ -22,12 +23,15 @@ func setupRouter() *gin.Engine {
 		login.POST("/carts", controller.CartPost)
 		login.PUT("/carts/:id", controller.CartPut)
 		login.DELETE("/carts/:id", controller.CartDelete)
+		login.GET("/orders", controller.OrderGet)
+		login.POST("/orders", controller.OrderPost)
 		admin := login.Group("")
 		admin.Use(middle.IsAdmin())
 		{
 			admin.POST("/goods", controller.GoodPost)
 			admin.PUT("/goods/:id", controller.GoodPut)
-			admin.DELETE("goods/:id", controller.GoodDelete)
+			admin.DELETE("/goods/:id", controller.GoodDelete)
+			admin.PUT("/orders/:id", controller.OrderPut)
 		}
 	}
 
@@ -39,6 +43,7 @@ func dbinstance() {
 	db.AutoMigrate(
 		&model.Admin{},
 		&model.Good{},
+		&model.Order{},
 		&model.Cart{},
 		&model.User{},
 	)

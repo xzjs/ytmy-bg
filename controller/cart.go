@@ -15,8 +15,8 @@ func CartPost(c *gin.Context) {
 		return
 	}
 	db := lib.DB()
-	userID := c.GetInt("userID")
-	result := db.Where("user_id = ? AND good_id = ?", userID, cart.GoodID).First(&cart)
+	userID := c.GetUint("userID")
+	result := db.Where("user_id = ? AND good_id = ? AND order_id IS NULL", userID, cart.GoodID).First(&cart)
 	if result.Error != nil {
 		cart.Num = 1
 		cart.UserID = uint(userID)
@@ -38,8 +38,8 @@ func CartPost(c *gin.Context) {
 func CartGet(c *gin.Context) {
 	var Carts []model.Cart
 	db := lib.DB()
-	userid := c.GetInt("userID")
-	result := db.Where("user_id = ?", userid).Preload("Good").Find(&Carts)
+	userid := c.GetUint("userID")
+	result := db.Where("user_id = ? and order_id is NULL", userid).Preload("Good").Order("created_at desc").Find(&Carts)
 	if result.Error != nil {
 		c.JSON(http.StatusInternalServerError, result.Error.Error())
 	} else {
@@ -56,7 +56,7 @@ func CartPut(c *gin.Context) {
 	id := c.Param("id")
 	db := lib.DB()
 	var CartDB model.Cart
-	userID := c.GetInt("userID")
+	userID := c.GetUint("userID")
 	result := db.Where("user_id = ?", userID).First(&CartDB, id)
 	if result.Error != nil {
 		c.JSON(http.StatusInternalServerError, result.Error.Error())

@@ -12,13 +12,9 @@ func IsLogin() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		_cookie, err := c.Cookie(lib.Conf().Cookie.Name)
 		if err != nil {
-			c.Set("userID", 1)
-			c.Set("type", 0)
-			c.Next()
+			c.Abort()
+			c.JSON(http.StatusUnauthorized, "token is not valid")
 			return
-			// c.Abort()
-			// c.JSON(http.StatusUnauthorized, "token is not valid")
-			// return
 		}
 		cookie, err := lib.CookieDecrypt(_cookie)
 		if err != nil {

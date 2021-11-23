@@ -1,6 +1,9 @@
 package lib
 
-import "encoding/json"
+import (
+	"encoding/json"
+	"errors"
+)
 
 type Cookie struct {
 	ID   uint `json:"id"`
@@ -21,5 +24,8 @@ func CookieDecrypt(s string) (*Cookie, error) {
 	str := Decode(s)
 	cookie := &Cookie{}
 	err := json.Unmarshal([]byte(str), cookie)
+	if cookie.ID == 0 {
+		err = errors.New("token is invalid")
+	}
 	return cookie, err
 }
