@@ -11,4 +11,6 @@ type Order struct {
 	Carts   []Cart `json:"carts"`
 	UserID  uint   `json:"-"`
 	Status  int    `json:"status"`
+	Total   int    `json:"total"`
+	Num     int    `json:"num"`
 }

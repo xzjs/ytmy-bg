@@ -2,6 +2,7 @@ package controller
 
 import (
 	"net/http"
+	"strconv"
 	"ytmy-bg/lib"
 	"ytmy-bg/model"
 
@@ -17,7 +18,17 @@ func OrderPost(c *gin.Context) {
 	db := lib.DB()
 	userID := c.GetUint("userID")
 	order.UserID = userID
-	order.Status = 1
+	order.Status = 0
+	var cartIDs []uint
+	for _, value := range order.Carts {
+		cartIDs = append(cartIDs, value.ID)
+	}
+	var carts []model.Cart
+	db.Where("user_id = ?", userID).Preload("Good").Find(&carts, cartIDs)
+	for _, value := range carts {
+		order.Num += value.Num
+		order.Total += value.Num * int(value.Good.Price)
+	}
 	result := db.Save(&order)
 	if result.Error != nil {
 		c.JSON(http.StatusInternalServerError, result.Error.Error())
@@ -30,7 +41,12 @@ func OrderGet(c *gin.Context) {
 	var Orders []model.Order
 	db := lib.DB()
 	userid := c.GetUint("userID")
-	result := db.Where("user_id = ?", userid).Preload("Carts").Order("status").Find(&Orders)
+	status, err := strconv.Atoi(c.DefaultQuery("status", "0"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, err.Error())
+		return
+	}
+	result := db.Where("user_id = ? AND status = ?", userid, status).Preload("Carts.Good").Order("created_at desc").Find(&Orders)
 	if result.Error != nil {
 		c.JSON(http.StatusInternalServerError, result.Error.Error())
 	} else {
