@@ -34,6 +34,18 @@ func GoodGet(c *gin.Context) {
 	}
 }
 
+func GoodGetOne(c *gin.Context) {
+	var good model.Good
+	db := lib.DB()
+	id := c.Param("id")
+	result := db.First(&good, id)
+	if result.Error != nil {
+		c.JSON(http.StatusInternalServerError, result.Error.Error())
+	} else {
+		c.JSON(http.StatusOK, good)
+	}
+}
+
 func GoodPut(c *gin.Context) {
 	good := model.Good{}
 	if err := c.ShouldBindJSON(&good); err != nil {

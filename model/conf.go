@@ -27,4 +27,12 @@ type Conf struct {
 	AES    AES    `yaml:"aes"`
 	Cookie Cookie `yaml:"cookie"`
 	Wechat Wechat `yaml:"wechat"`
+	QiNiu  QiNiu  `yaml:"qiniu"`
+}
+
+type QiNiu struct {
+	AK     string `yaml:"ak"`
+	SK     string `yaml:"sk"`
+	Bucket string `yaml:"bucket"`
+	Domain string `yaml:"domain"`
 }

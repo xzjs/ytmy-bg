@@ -57,13 +57,13 @@ func OrderGet(c *gin.Context) {
 func OrderPut(c *gin.Context) {
 	Order := model.Order{}
 	if err := c.ShouldBindJSON(&Order); err != nil {
-		c.JSON(http.StatusBadRequest, err)
+		c.JSON(http.StatusBadRequest, err.Error())
 		return
 	}
 	id := c.Param("id")
 	db := lib.DB()
 	var OrderDB model.Order
-	userID := c.GetInt("userID")
+	userID := c.GetUint("userID")
 	result := db.Where("user_id = ?", userID).First(&OrderDB, id)
 	if result.Error != nil {
 		c.JSON(http.StatusInternalServerError, result.Error.Error())

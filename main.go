@@ -19,6 +19,7 @@ func setupRouter() *gin.Engine {
 	login.Use(middle.IsLogin())
 	{
 		login.GET("/goods", controller.GoodGet)
+		login.GET("/goods/:id", controller.GoodGetOne)
 		login.GET("/carts", controller.CartGet)
 		login.POST("/carts", controller.CartPost)
 		login.PUT("/carts/:id", controller.CartPut)
@@ -32,6 +33,7 @@ func setupRouter() *gin.Engine {
 			admin.PUT("/goods/:id", controller.GoodPut)
 			admin.DELETE("/goods/:id", controller.GoodDelete)
 			admin.PUT("/orders/:id", controller.OrderPut)
+			admin.GET("/uptoken", controller.TokenGet)
 		}
 	}
 
