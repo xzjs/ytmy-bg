@@ -15,10 +15,10 @@ func setupRouter() *gin.Engine {
 	r := gin.Default()
 	r.POST("/api/admin/login", controller.AdminLoginPost)
 	r.POST("/api/user/login", controller.UserLogin)
+	r.GET("/api/goods", controller.GoodGet)
 	login := r.Group("/api")
 	login.Use(middle.IsLogin())
 	{
-		login.GET("/goods", controller.GoodGet)
 		login.GET("/goods/:id", controller.GoodGetOne)
 		login.GET("/carts", controller.CartGet)
 		login.POST("/carts", controller.CartPost)
